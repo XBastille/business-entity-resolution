@@ -3,7 +3,7 @@ import unicodedata
 import polars as pl
 from anyascii import anyascii
 
-from text import clean
+from entity_resolution.data.text import clean
 
 INDIC = ("ऀ", "෿")
 

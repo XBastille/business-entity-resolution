@@ -3,8 +3,8 @@ import polars as pl
 from rapidfuzz import fuzz, process
 from rapidfuzz.distance import JaroWinkler
 
-from text import clean, numbers
-from translit import romanise
+from entity_resolution.data.text import clean, numbers
+from entity_resolution.data.translit import romanise
 
 LEGAL = ("llc inc incorporated corp corporation co company ltd limited pvt private llp pc plc lp "
          "sa sas sarl sci eurl the and of shri smt sri mr ms dba").split()

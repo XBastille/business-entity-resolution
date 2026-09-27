@@ -2,11 +2,14 @@ import lightgbm as lgb
 import numpy as np
 import polars as pl
 
-from translit import learn
+from entity_resolution.data.translit import learn
 
 K = 3
+SEED = 3407
 PARAMS = dict(objective="binary", learning_rate=0.05, num_leaves=63, min_data_in_leaf=50, feature_fraction=0.9,
               verbose=-1)
+BIG = dict(objective="binary", learning_rate=0.05, num_leaves=255, min_data_in_leaf=500, feature_fraction=0.8,
+           verbose=-1)
 ROUNDS = 300
 NO_LATIN = ~pl.col("business_name").str.contains(r"[A-Za-z]")
 
@@ -35,9 +38,15 @@ def owner_rows(s1, ot, pairs):
             .fill_null(-1).to_numpy().astype(np.int64))
 
 
-def fit(X, y, threads, rounds=ROUNDS):
-    return lgb.train({**PARAMS, "num_threads": threads}, lgb.Dataset(X, np.asarray(y, dtype=np.float32)),
-                     num_boost_round=rounds)
+def fit(X, y, threads, rounds=ROUNDS, params=PARAMS, valid=None, stop=100):
+    """LightGBM; with `valid` = (X, y) it stops once validation log loss has not improved for `stop` rounds."""
+    train = lgb.Dataset(X, np.asarray(y, dtype=np.float32))
+    sets, callbacks = [], []
+    if valid is not None:
+        sets = [lgb.Dataset(valid[0], np.asarray(valid[1], dtype=np.float32), reference=train)]
+        callbacks = [lgb.early_stopping(stop, verbose=False), lgb.log_evaluation(100)]
+    return lgb.train({**params, "num_threads": threads, "seed": SEED}, train, num_boost_round=rounds,
+                     valid_sets=sets, callbacks=callbacks)
 
 
 def decide(rec, prob, n_rec, t):

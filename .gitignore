@@ -1,6 +1,11 @@
 __pycache__/
 *.pyc
-data/
 student_resource/
 *.parquet
 *.tsv
+data/*
+!data/.gitkeep
+outputs/*
+!outputs/.gitkeep
+work/*
+!work/.gitkeep
