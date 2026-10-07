@@ -1,4 +1,4 @@
-# timepass · Amazon ML Challenge 2026, business entity resolution
+# Business Entity Resolution
 
 For every Source 1 business, find the Source 2 and Source 3 records that are the same business, or none.
 This is the pipeline behind our final submission. On held-out businesses shaped like test it scores about 0.988
